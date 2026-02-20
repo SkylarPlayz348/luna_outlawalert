@@ -1,8 +1,8 @@
 -- ESX Framework Stuff ---------------------------------------------------------------
-ESX = nil
-TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
+// ESX = nil
+// TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
-ESX.RegisterServerCallback('linden_outlawalert:getCharData', function(source, cb)
+lib.callback.register('linden_outlawalert:getCharData', function(source, cb)
 	local xPlayer = ESX.GetPlayerFromId(source)
 	if not xPlayer then return end
 
@@ -14,7 +14,7 @@ ESX.RegisterServerCallback('linden_outlawalert:getCharData', function(source, cb
 	end)
 end)
 
-ESX.RegisterServerCallback('linden_outlawalert:isVehicleOwned', function(source, cb, plate)
+lib.callback.register('linden_outlawalert:isVehicleOwned', function(source, cb, plate)
 	MySQL.Async.fetchAll('SELECT plate FROM owned_vehicles WHERE plate = @plate', {
 		['@plate'] = plate
 	}, function(result)
@@ -34,14 +34,11 @@ caller = name
 info = title
 
 function getCaller(src)
-	local xPlayer = ESX.GetPlayerFromId(src)
-	return xPlayer.getName()
+	return GetPlayerName(GetPlayerPed(src))
 end
 
 function getTitle(src)
-	local xPlayer = ESX.GetPlayerFromId(src)
-	local title = ('%s %s'):format(xPlayer.job.grade_label, xPlayer.get('lastName'))
-	return title
+	return "Officer"
 end
 
 local dispatchCodes = {
@@ -82,14 +79,6 @@ local blacklistedIdentifiers = {
 }
 
 function Blacklisted()
-	local xPlayer = ESX.GetPlayerFromId(source)
-	if not xPlayer then return false end
-	local identifier = xPlayer.steamId
-	for i = 1, #blacklistedIdentifiers do
-		if identifier == blacklistedIdentifiers[i] then
-			return true
-		end
-	end
 	return false
 end
 
